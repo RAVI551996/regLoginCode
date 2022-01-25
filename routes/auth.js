@@ -5,23 +5,22 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { registerValidation,loginValidation } = require('../validation')
 
-
-
-
 router.post('/register',async (req, res)=>{
 
     // Confirm Password
     const isConfirmed  = req.body.password.localeCompare(req.body.confirmPassword);
     if(isConfirmed != 0)
-    return res.status(400).send("Password Doesn't match. Please re-enter password.");
+    return res
+    .status(203)
+    .json({ error: "Password Doesn't match. Please re-enter password." });
 
     //Let validate the data before we make a user
     const { error } = registerValidation(req.body);
-    if(error) return res.status(400).send(error.details[0].message);
+    if(error) return res.status(203).send(error.details[0].message);
     
     // checking if the user is already in the data base
     const emailExist =await User.findOne({email:req.body.email});
-    if(emailExist) return res.status(400).send('Email is already exists');
+    if(emailExist) return res.status(203).send('Email is already exists');
 
     //Hash passwords
     const salt =await bcrypt.genSalt(10);
@@ -58,14 +57,14 @@ router.post('/login',async (req,res)=>{
     //Let validate the data before we make a user
    
     const { error } = loginValidation(req.body);
-    if(error) return res.status(400).send(error.details[0].message);
+    if(error) return res.status(203).send(error.details[0].message);
    
         // checking if the email exist
         const user =await User.findOne({email:req.body.email});
-        if(!user) return res.status(400).send('Email not found');
+        if(!user) return res.status(203).send('Email not found');
         //password is correct
         const validPass = await bcrypt.compare(req.body.password,user.password);
-        if(!validPass)return res.status(400).send('Invalid password');
+        if(!validPass)return res.status(203).send('Invalid password');
 
        
         //create and assign token
@@ -74,10 +73,12 @@ router.post('/login',async (req,res)=>{
             email:req.body.email,
             id: user._id,
             token:jwt.sign({_id: user._id},process.env.TOKEN_SECRET)
+            
         }); 
-
+        console.log(user._id)
         // res.send('Logged in!');
 });
+
 
 module.exports =router;
 
