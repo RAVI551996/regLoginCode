@@ -13,7 +13,7 @@ const bodyParser = require('body-parser');
 const authRoute =require('./routes/auth');
 const postRoute= require('./routes/posts');
 
-dotenv.config();
+// dotenv.config();
 app.use(cors());
 
 //connect to DB
