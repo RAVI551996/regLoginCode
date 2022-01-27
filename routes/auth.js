@@ -26,7 +26,7 @@ router.post('/register',async (req, res)=>{
     if(emailExist) 
     return res
     .status(203)
-    .send('Email is already exists');
+    .json({ error: "Email is already exists" });
 
     //Hash passwords
     const salt =await bcrypt.genSalt(10);
@@ -43,7 +43,7 @@ router.post('/register',async (req, res)=>{
     try{
         const savedUser = await user.save();
         var token = jwt.sign({_id: user._id},process.env.TOKEN_SECRET);
-        res.status(200).json({
+        res.status(203).json({
             // name:req.body.name,
             email:req.body.email,
             id: user._id,
@@ -53,7 +53,7 @@ router.post('/register',async (req, res)=>{
      
         
     }catch(err){
-        res.status(400).send(err);
+        res.status(401).json(err);
     }
  }); 
 
@@ -66,32 +66,30 @@ router.post('/login',async (req,res)=>{
     if(error) 
     return res
     .status(203)
-    .send(error.details[0].message);
+    .json(error.details[0].message);
    
     // checking if the email exist
     const user =await User.findOne({email:req.body.email});    
     if(!user) 
     return res
     .status(203)
-    .send('Email not found');
+    .json({ error: "Email not found" });
     
     //password is correct
     const validPass = await bcrypt.compare(req.body.password,user.password);
     if(!validPass)
     return res
     .status(203)
-    .send('Invalid password');
+    .json({error:"Invalid password"});
+           
 
-       
-        //create and assign token
-       
-        res.status(200).json({
-            email:req.body.email,
-            id: user._id,
-            token:jwt.sign({_id: user._id},process.env.TOKEN_SECRET)
-            
-        }); 
-        console.log(user._id)
+    //create and assign token   
+    res.status(200).json({
+        email:req.body.email,
+        id: user._id,
+        token:jwt.sign({_id: user._id},process.env.TOKEN_SECRET)
+    }); 
+        // console.log(user._id)
         // res.send('Logged in!');
 });
 

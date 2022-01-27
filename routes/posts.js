@@ -13,9 +13,9 @@ router.post("/" ,verifyToken, async (req, res) => {
     try {
         // const token = req.header('auth-token');
       const savedPost = await newPost.save();
-      res.status(200).json(savedPost);
+      res.status(203).json(savedPost);
     } catch (err) {
-      res.status(500).json(err);
+      res.status(401).json(err);
     }
   });
   
@@ -33,15 +33,15 @@ router.post("/" ,verifyToken, async (req, res) => {
             },
             { new: true }
           );
-          res.status(200).json(updatedPost);
+          res.status(203).json(updatedPost);
         } catch (err) {
-          res.status(500).json(err);
+          res.status(401).json(err);
         }
       } else {
         res.status(401).json("You can update only your post!");
       }
     } catch (err) {
-      res.status(500).json(err);
+      res.status(401).json(err);
     }
   });
   
@@ -53,15 +53,15 @@ router.post("/" ,verifyToken, async (req, res) => {
       if (post.username === req.body.username) {
         try {
           await post.delete();
-          res.status(200).json("Post has been deleted...");
+          res.status(203).json("Post has been deleted...");
         } catch (err) {
-          res.status(500).json(err);
+          res.status(401).json(err);
         }
       } else {
         res.status(401).json("You can delete only your post!");
       }
     } catch (err) {
-      res.status(500).json(err);
+      res.status(401).json(err);
     }
   });
   
@@ -70,9 +70,9 @@ router.post("/" ,verifyToken, async (req, res) => {
     const userId = req.user._id ;
     try {
       const post =  Post.findById(req.params.id);
-      res.status(200).json(post);
+      res.status(203).json(post);
     } catch (err) {
-      res.status(500).json(err);
+      res.status(401).json(err);
     }
   });
   
@@ -94,9 +94,9 @@ router.post("/" ,verifyToken, async (req, res) => {
       } else {
         posts = await Post.find();
       }
-      res.status(200).json(posts);
+      res.status(203).json(posts);
     } catch (err) {
-      res.status(500).json(err);
+      res.status(401).json(err);
     }
   });
   
